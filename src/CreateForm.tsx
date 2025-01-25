@@ -1,30 +1,13 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from "zod"
-import { FormSchema, myFormSchemaNoImage, parseJsonToZodSchema, TMyFormSchema, TMyFormSchemaNoImage } from './types';
+import { parseJsonToZodSchema, TMyFormSchema,} from './types';
+import { useAppDispatch, useAppSelector } from './store/store';
+import {selectEditField } from './store/slices/general';
 
 export default function MyForm() {
   // Example JSON schema
-  const jsonSchema: FormSchema = {
-    name: 'Form',
-    fields: [
-      // { name: "name", type: "string", required: true },
-      { type: "string", name: "firstName", placeholder: 'First Name',  required: true },
-      { type: "number", name: "age",  required: true, min: 18 },
-      { type: "email", name: "email", required: true },
-      { type: "password", name: "password" }
-      // / DONE
-      // - text input 
-      
-      // TODO
-      // - textarea
-      // - select dropdown
-      // - checkbox
-      // - radio buttons
-      // - datepicker
-      // - file upload
-    ]
-  };
+  const jsonSchema = useAppSelector((state) => state.newForm);
 
   const zodSchema = parseJsonToZodSchema(jsonSchema);
 
@@ -55,24 +38,32 @@ export default function MyForm() {
     reset();
   }
 
+  const dispatch = useAppDispatch();
+
+  const onEditField = (f) => {
+    console.log(`Editing ${f.id}`, f)
+    dispatch(selectEditField(f))
+  }
+
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)}>
-      MY FORM
-      {jsonSchema.fields.map(({placeholder, name, type}) => (
-        <div className="grid">
+      Form Builder
+      {jsonSchema.fields.map((f, i) => (
+        <div className="grid" key={i}>
           <div className="grid">
-            <label htmlFor={name} className="sr-only">
-              {name}:
+            <label htmlFor={f.id} className="sr-only">
+              {f.id}:
             </label>
             <input
-              type={type} 
-              placeholder={placeholder || name}
-              id={name}
+              type={f.type} 
+              placeholder={f.placeholder || f.id}
+              id={f.id}
               className={`peer border-gray-400 border rounded-md p-[8px] leading-[16px] `}
-              {...register(name)}
+              {...register(f.id)}
+              onFocus={() => onEditField(f)}
             />
           </div>
-        {errors && errors[name] && <p className="text-red-600">{`${errors[name].message}`}</p>}
+        {errors && errors[f.id] && <p className="text-red-600">{`${errors[f.id].message}`}</p>}
       </div>
       ))}
       <button className='p-2 bg-slate-700 text-white' type='submit'>Submit</button>

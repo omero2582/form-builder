@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import MyForm from './MyForm'
+import MyForm from './CreateForm'
 
 // Import styles of packages that you've installed.
 // All packages except `@mantine/hooks` require styles imports
@@ -8,23 +8,20 @@ import { MantineProvider } from '@mantine/core';
 
 import { useDisclosure } from '@mantine/hooks';
 import { Modal, Button } from '@mantine/core';
+import CustomFieldPanel from './CustomFieldPanel';
+import { useAppDispatch, useAppSelector } from './store/store';
+import { toggleSidePanel } from './store/slices/general';
 
 
 function App() {
-  const [opened, { open, close }] = useDisclosure(false);
-
+  const showSidePanel = useAppSelector((state) => state.general.showSidePanel);
   return (
     <MantineProvider>
-      <div className='bg-gray-200 min-h-[100vh] grid justify-center content-center'>
-        <MyForm/>
-        <div>
-          <Modal opened={opened} onClose={close} title="Authentication">
-            {/* Modal content */}
-          </Modal>
-
-          <Button variant="default" onClick={open}>
-            Open modal
-          </Button>
+      <div className='bg-gray-200 min-h-[100vh] flex'>
+        <Main/>
+        <div className={`flex-shrink-0 transition-[width]  ${showSidePanel ? 'w-[200px] px-3 border-r-[1.5px] border-neutral-300' : 'w-0'}`}>
+          {showSidePanel && 
+          <CustomFieldPanel/>}
         </div>
       </div>
     </MantineProvider>
@@ -32,3 +29,32 @@ function App() {
 }
 
 export default App
+
+
+export function Main() {
+  const dispatch = useAppDispatch();
+  const showSidePanel = useAppSelector((state) => state.general.showSidePanel);
+  return (
+    <div className='flex-1 grid justify-center content-center'>
+      <MyForm/>
+      <button onClick={() => dispatch(toggleSidePanel())}>
+        {showSidePanel ? 'Hide Side Panel' : 'Show Side Panel'}
+      </button>
+    </div>
+  )
+}
+
+
+function TestModal() {
+  const [opened, { open, close }] = useDisclosure(false);
+  return(
+    <>
+    <Modal opened={opened} onClose={close} title="Authentication">
+      {/* Modal content */}
+      </Modal>
+      <Button variant="default" onClick={open}>
+      Open modal
+      </Button>
+    </>
+  )
+}
