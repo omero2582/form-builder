@@ -1,21 +1,25 @@
 import { z } from "zod";
 
-export const myFormSchema = z.object({
-});
+// export const myFormSchema = z.object({
+// });
 
-type FieldSchema = {
-  name: string;
-  type: "string" | "number" | "email" | "boolean";
-  required: boolean;
-  min?: number;
-  max?: number;
+export type FieldSchema = {
+  name: string,
+  placeholder?: string
+  type: "string" | "number" | "email" | "boolean"  | "password"
+  | "textarea" | "select" | "checkbox" | "radio" | "date" | "file"
+  required?: boolean,
+  min?: number,
+  max?: number,
 };
 
-type FormSchema = {
-  fields: FieldSchema[];
+export type FormSchema = {
+  name: string,
+  description?: string,
+  fields: FieldSchema[],
 };
 
-const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
+export const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
   const shape: Record<string, any> = {};
 
   jsonSchema.fields.forEach((field) => {
@@ -23,13 +27,15 @@ const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
 
     switch (field.type) {
       case "string":
+      case "textarea":
+      case "password":
         zodField = z.string();
         break;
       case "email":
         zodField = z.string().email();
         break;
       case "number":
-        zodField = z.number();
+        zodField = z.coerce.number();
         if (field.min !== undefined) zodField = zodField.min(field.min);
         if (field.max !== undefined) zodField = zodField.max(field.max);
         break;
@@ -37,7 +43,7 @@ const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
         zodField = z.boolean();
         break;
       default:
-        throw new Error(`Unsupported field type: ${field.type}`);
+        throw new Error(`Custom from field type: ${field.type}, not supported`);
     }
 
     if (field.required) {
@@ -50,4 +56,4 @@ const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
   return z.object(shape);
 };
 
-export type TMyFormSchema = z.infer<typeof myFormSchema>;
+// export type TMyFormSchema = z.infer<typeof myFormSchema>;
