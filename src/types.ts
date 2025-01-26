@@ -9,11 +9,13 @@ export const typeConfig = {
   email: { zodType: () => z.string().email(), new: () => ({ type: "email", id: `email-${nanoid(8)}`, placeholder: 'abc@example.com', label: 'Email:' }) },
   number: { zodType: () => z.coerce.number(), new: () => ({ type: "number", id: `number-${nanoid(8)}`, placeholder: '10', label: 'Number:' })  },
   password: { zodType: () => z.string(), new: () => ({ type: "password", id: `password-${nanoid(8)}`, placeholder: 'password', label: 'Password:' })  },
+  
+  date: { zodType: () => z.coerce.date(), new: () => ({ type: "date", id: `date-${nanoid(8)}` }) , label: 'Date:'},
+  
+  select: { zodType: () => z.string(), new: () => ({ type: "select", options: [{label: 'option', id: `select-option-${nanoid(8)}`}], id: `select-${nanoid(8)}`,}) , label: 'Dropdown:'},
   textarea: { zodType: () => z.string(), new: () => ({ type: "textarea", id: `textarea-${nanoid(8)}`, placeholder: 'Description', label: 'Text Area:' })  },
-  select: { zodType: () => z.string(), new: () => ({ type: "select", id: `select-${nanoid(8)}`,}) , label: 'Dropdown:'},
   checkbox: { zodType: () => z.boolean(), new: () => ({ type: "checkbox", id: `checkbox-${nanoid(8)}` , label: 'Checkbox'}) },
   radio: { zodType: () => z.string(), new: () => ({ type: "radio", id: `radio-${nanoid(8)}` }) , label: 'Radio:'},
-  date: { zodType: () => z.coerce.date(), new: () => ({ type: "date", id: `date-${nanoid(8)}` }) , label: 'Date:'},
   // file: { zodType: z.instanceof(File), supports: [] },
 };
 
@@ -37,7 +39,7 @@ export type FormSchema = {
 };
 
 export const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
-  const shape: Record<string, any> = {};
+  const shape = {};
 
   jsonSchema.fields.forEach((field) => {
     // let zodField;

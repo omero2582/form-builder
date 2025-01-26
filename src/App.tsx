@@ -8,7 +8,7 @@ import { MantineProvider } from '@mantine/core';
 
 import { useDisclosure } from '@mantine/hooks';
 import { Modal, Button } from '@mantine/core';
-import CustomFieldPanel from './CustomFieldPanel';
+import SidePanel from './SidePanel';
 import { useAppDispatch, useAppSelector } from './store/store';
 import { toggleSidePanel } from './store/slices/general';
 
@@ -21,7 +21,7 @@ function App() {
         <Main/>
         <div className={`flex-shrink-0 transition-[width]  ${showSidePanel ? 'w-[200px] px-3 border-r-[1.5px] border-neutral-300' : 'w-0'}`}>
           {showSidePanel && 
-          <CustomFieldPanel/>}
+          <SidePanel/>}
         </div>
       </div>
     </MantineProvider>
@@ -53,7 +53,7 @@ function TestModal() {
       {/* Modal content */}
       </Modal>
       <Button variant="default" onClick={open}>
-      Open modal
+        Open modal
       </Button>
     </>
   )

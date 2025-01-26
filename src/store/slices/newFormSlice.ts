@@ -1,12 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
 import { FormSchema, typeConfig } from '../../types';
 
 
 const initialState: FormSchema = {
     name: 'Form',
     fields: [
-      // { name: "name", type: "string", required: true },
       { type: "string", id: "firstName", placeholder: 'First Name',  required: true },
       { type: "number", id: "age",  required: true, min: 18 },
       { type: "email", id: "email", required: true },
@@ -23,6 +21,9 @@ const initialState: FormSchema = {
       // - radio buttons
       // - datepicker
       // - file upload
+
+      // TOOD OT DO change above to justbe composed of a bunch of field.new() called 5 times or so to 
+      // create the intiial state for 'Default New Form'
     ],
   };
 
