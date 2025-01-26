@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from "zod"
 import { parseJsonToZodSchema, TMyFormSchema,} from './types';
 import { useAppDispatch, useAppSelector } from './store/store';
-import {selectEditField } from './store/slices/general';
+import {selectEditField, setSidePanel } from './store/slices/general';
 
 export default function MyForm() {
   // Example JSON schema
@@ -57,10 +57,33 @@ function FieldRender({f, errors, register}) {
   const onEditField = (f) => {
     console.log(`Editing ${f.id}`, f)
     dispatch(selectEditField(f))
+    dispatch(setSidePanel(true))
   }
 
   // TODO
-  // if f.type === select, radio, checkbox, textarea
+  // if f.type === checkbox
+
+  if(f.type === 'textarea'){
+    return (
+      <div className="grid">
+        <div className="grid">
+          <label htmlFor={f.id} className="sr-only">
+            {f.id}:
+          </label>
+          <textarea
+            spellCheck={false}
+            className={`border-gray-400 border rounded-md resize-none peer p-[6px] `}
+            id={f.id}
+            placeholder={f.placeholder}
+            cols={50} rows={4} 
+            {...register(f.id)}
+            onFocus={() => onEditField(f)}
+          />    
+        </div>
+        {errors && errors[f.id] && <p className="text-red-600">{`${errors[f.id].message}`}</p>}
+      </div>
+    )
+  }
 
   if(f.type ===  'select'){
     return (
@@ -69,19 +92,36 @@ function FieldRender({f, errors, register}) {
         <label htmlFor={f.id} className="sr-only">
           {f.id}:
         </label>
-        {/* <input
-          type={f.type} 
-          placeholder={f.placeholder || f.id}
-          id={f.id}
-          className={`peer border-gray-400 border rounded-md p-[8px] leading-[16px] `}
+        <select name={f.id} id={f.id} onFocus={() => onEditField(f)}
           {...register(f.id)}
-          onFocus={() => onEditField(f)}
-        /> */}
-        <select name={f.id} id={f.id} onFocus={() => onEditField(f)}>
+          className={`peer border-gray-400 border rounded-md p-[8px] leading-[16px] `}
+        >
           {f.options.map(o => (
             <option key={o.id} value={o.label}>{o.label}</option>
           ))}
         </select>
+      </div>
+      {errors && errors[f.id] && <p className="text-red-600">{`${errors[f.id].message}`}</p>}
+    </div>
+    )
+  }
+
+  if(f.type ===  'radio'){
+    return (
+      <div className="grid">
+      <div className="grid">
+        <label htmlFor={f.id} className="sr-only">
+          {f.id}:
+        </label>
+        {f.options.map(o => (
+          <label key={o.id}>
+            {o.label}
+            <input type='radio' name={f.id} id={o.id} value={o.label} onFocus={() => onEditField(f)}
+            {...register(f.id)}
+            // className={`peer border-gray-400 border rounded-md p-[8px] leading-[16px] `}
+            />
+          </label>
+        ))}
       </div>
       {errors && errors[f.id] && <p className="text-red-600">{`${errors[f.id].message}`}</p>}
     </div>
@@ -98,7 +138,7 @@ function FieldRender({f, errors, register}) {
           type={f.type} 
           placeholder={f.placeholder || f.id}
           id={f.id}
-          className={`peer border-gray-400 border rounded-md p-[8px] leading-[16px] `}
+          className={`border-gray-400 border rounded-md p-[8px] leading-[16px] `}
           {...register(f.id)}
           onFocus={() => onEditField(f)}
         />

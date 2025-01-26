@@ -6,9 +6,9 @@ const initialState: FormSchema = {
     name: 'Form',
     fields: [
       { type: "string", id: "firstName", placeholder: 'First Name',  required: true },
-      { type: "number", id: "age",  required: true, min: 18 },
-      { type: "email", id: "email", required: true },
-      { type: "password", id: "password" }
+      { type: "number", id: "id", placeholder: 'id', required: true, min: 18 },
+      { type: "email", id: "email", placeholder:'email', required: true },
+      { type: "password", id: "password", placeholder:'password' }
       // / DONE
       // - text input 
       //    .sting() = "string" | "number" | "email"  | "password" 
@@ -20,7 +20,6 @@ const initialState: FormSchema = {
       // - checkbox
       // - radio buttons
       // - datepicker
-      // - file upload
 
       // TOOD OT DO change above to justbe composed of a bunch of field.new() called 5 times or so to 
       // create the intiial state for 'Default New Form'
@@ -37,6 +36,10 @@ export const newForm = createSlice({
     },
     addNumber: (state) => {
       const newField = typeConfig.number.new();
+      state.fields.push(newField)
+    },
+    addTextArea: (state) => {
+      const newField = typeConfig.textarea.new();
       state.fields.push(newField)
     },
     addDropbown: (state) => {
@@ -61,6 +64,6 @@ export const newForm = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const {addText, updateFieldById, addDate,addDropbown,addNumber,addRadioButtons} = newForm.actions
+export const {addText, addTextArea, updateFieldById, addDate,addDropbown, addNumber, addRadioButtons} = newForm.actions
 
 export default newForm.reducer

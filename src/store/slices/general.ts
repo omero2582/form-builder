@@ -13,6 +13,9 @@ export const general = createSlice({
     toggleSidePanel: (state) => {
       state.showSidePanel = !state.showSidePanel
     },
+    setSidePanel: (state, {payload}) => {
+      state.showSidePanel = payload
+    },
     selectEditField: (state, {payload}) => {
       state.editField = payload
     }
@@ -21,6 +24,6 @@ export const general = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const {toggleSidePanel, selectEditField} = general.actions
+export const {toggleSidePanel, selectEditField, setSidePanel} = general.actions
 
 export default general.reducer

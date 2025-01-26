@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { nanoid } from 'nanoid';
 
-// export const myFormSchema = z.object({
-// });
-
 export const typeConfig = {
   string: { zodType: () => z.string(), new: () => ({ type: "string", id: `string-${nanoid(8)}`, placeholder: 'my text', label: 'Text:' }) },
   email: { zodType: () => z.string().email(), new: () => ({ type: "email", id: `email-${nanoid(8)}`, placeholder: 'abc@example.com', label: 'Email:' }) },
@@ -12,11 +9,11 @@ export const typeConfig = {
   
   date: { zodType: () => z.coerce.date(), new: () => ({ type: "date", id: `date-${nanoid(8)}` }) , label: 'Date:'},
   
-  select: { zodType: () => z.string(), new: () => ({ type: "select", options: [{label: 'option', id: `select-option-${nanoid(8)}`}], id: `select-${nanoid(8)}`,}) , label: 'Dropdown:'},
   textarea: { zodType: () => z.string(), new: () => ({ type: "textarea", id: `textarea-${nanoid(8)}`, placeholder: 'Description', label: 'Text Area:' })  },
+  select: { zodType: (field) => z.enum(field.options.map(o => o.label)), new: () => ({ type: "select", options: [{label: 'option', id: `select-option-${nanoid(8)}`}], id: `select-${nanoid(8)}`,}) , newOption: () => ({label: 'option', id: `select-option-${nanoid(8)}`}), label: 'Dropdown:'},
+  radio: { zodType: (field) => z.enum(field.options.map(o => o.label)), new: () => ({ type: "radio", options: [{label: 'option', id: `radio-option-${nanoid(8)}`}], id: `radio-${nanoid(8)}` }), newOption: () => ({label: 'option', id: `radio-option-${nanoid(8)}`}), label: 'Radio:'},
+  
   checkbox: { zodType: () => z.boolean(), new: () => ({ type: "checkbox", id: `checkbox-${nanoid(8)}` , label: 'Checkbox'}) },
-  radio: { zodType: () => z.string(), new: () => ({ type: "radio", id: `radio-${nanoid(8)}` }) , label: 'Radio:'},
-  // file: { zodType: z.instanceof(File), supports: [] },
 };
 
 export type FieldSchema = {
@@ -74,7 +71,7 @@ export const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
       throw new Error(`Custom from field type: ${field.type}, not supported`);
     }
 
-    let zodField = config.zodType();
+    let zodField = config.zodType(field);
 
     // if (config.supports.includes("min") && field.min !== undefined) {
     //   zodField = zodField().min(field.min);
