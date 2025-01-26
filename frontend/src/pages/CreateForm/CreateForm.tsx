@@ -1,11 +1,32 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from "zod"
-import { parseJsonToZodSchema, TMyFormSchema,} from './types';
-import { useAppDispatch, useAppSelector } from './store/store';
-import {selectEditField, setSidePanel } from './store/slices/general';
+import { parseJsonToZodSchema, TMyFormSchema,} from '../../types';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+import {selectEditField, setSidePanel, toggleSidePanel } from '../../store/slices/general';
+import SidePanel from './SidePanel';
 
-export default function MyForm() {
+export default function CreateForm() {
+  const dispatch = useAppDispatch();
+  const showSidePanel = useAppSelector((state) => state.general.showSidePanel);
+  return (
+    <div className='flex min-h-[100vh]'>
+      <div className='flex-1 grid justify-center content-center'>
+        <MyForm/>
+        <button onClick={() => dispatch(toggleSidePanel())}>
+          {showSidePanel ? 'Hide Side Panel' : 'Show Side Panel'}
+        </button>
+      </div>
+      <div className={`flex-shrink-0 transition-[width]  ${showSidePanel ? 'w-[200px] px-3 border-r-[1.5px] border-neutral-300' : 'w-0'}`}>
+        {showSidePanel && 
+        <SidePanel/>}
+      </div>
+    </div>
+  )
+}
+
+
+export function MyForm() {
   // Example JSON schema
   const jsonSchema = useAppSelector((state) => state.newForm);
 
@@ -88,19 +109,19 @@ function FieldRender({f, errors, register}) {
   if(f.type ===  'select'){
     return (
       <div className="grid">
-      <div className="grid">
-        <label htmlFor={f.id} className="sr-only">
-          {f.id}:
-        </label>
-        <select name={f.id} id={f.id} onFocus={() => onEditField(f)}
-          {...register(f.id)}
-          className={`peer border-gray-400 border rounded-md p-[8px] leading-[16px] `}
-        >
-          {f.options.map(o => (
-            <option key={o.id} value={o.label}>{o.label}</option>
-          ))}
-        </select>
-      </div>
+        <div className="grid">
+          <label htmlFor={f.id} className="sr-only">
+            {f.id}:
+          </label>
+          <select name={f.id} id={f.id} onFocus={() => onEditField(f)}
+            {...register(f.id)}
+            className={`peer border-gray-400 border rounded-md p-[8px] leading-[16px] `}
+          >
+            {f.options.map(o => (
+              <option key={o.id} value={o.label}>{o.label}</option>
+            ))}
+          </select>
+        </div>
       {errors && errors[f.id] && <p className="text-red-600">{`${errors[f.id].message}`}</p>}
     </div>
     )

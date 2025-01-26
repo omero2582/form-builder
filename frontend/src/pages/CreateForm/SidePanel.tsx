@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from './store/store'
-import { addTextArea, addDate, addDropbown, addNumber, addRadioButtons, addText } from './store/slices/newFormSlice'
-import { typeConfig } from './types';
+import { useAppDispatch, useAppSelector } from '../../store/store'
+import { addTextArea, addDate, addDropbown, addNumber, addRadioButtons, addText } from '../../store/slices/newFormSlice'
+import { typeConfig } from '../../types';
 
-export default function CustomFieldPanel() {
+export default function SidePanel() {
   const dispatch = useAppDispatch();
   const fieldOptions = [
     {name: 'text input', onClick: () => (dispatch(addText()))},
