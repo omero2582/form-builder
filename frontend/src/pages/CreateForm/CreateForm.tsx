@@ -1,18 +1,35 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from "zod"
-import { parseJsonToZodSchema, TMyFormSchema,} from '../../types';
+import { parseJsonToZodSchema} from '../../types';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import {selectEditField, setSidePanel, toggleSidePanel } from '../../store/slices/general';
 import SidePanel from './SidePanel';
+import { useGetFormByIdQuery } from '../../store/api/apiSlice';
+import { useParams } from 'react-router-dom';
 
 export default function CreateForm() {
   const dispatch = useAppDispatch();
   const showSidePanel = useAppSelector((state) => state.general.showSidePanel);
+  
+  const { id } = useParams();
+  console.log(id)
+  const {data, isLoading, error} = useGetFormByIdQuery({id});
+
+  const jsonSchema = useAppSelector((state) => state.newForm);
+  if(isLoading){
+    return <p>Loading...</p>
+  }
+
+  if(error){
+    return <p>Error</p>
+  }
+
+
   return (
     <div className='flex min-h-[100vh]'>
       <div className='flex-1 grid justify-center content-center'>
-        <MyForm/>
+        <MyForm formSchema={data.form}/>
         <button onClick={() => dispatch(toggleSidePanel())}>
           {showSidePanel ? 'Hide Side Panel' : 'Show Side Panel'}
         </button>
@@ -26,11 +43,11 @@ export default function CreateForm() {
 }
 
 
-export function MyForm() {
+export function MyForm({formSchema}) {
   // Example JSON schema
-  const jsonSchema = useAppSelector((state) => state.newForm);
-
-  const zodSchema = parseJsonToZodSchema(jsonSchema);
+  // const formSchema = useAppSelector((state) => state.newForm);
+  console.log('FORM SCHEMA', formSchema)
+  const zodSchema = parseJsonToZodSchema(formSchema);
 
   const formHookReturn = useForm({
     // resolver: zodResolver(productSchemaNoImage)
@@ -64,7 +81,7 @@ export function MyForm() {
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)}>
       Form Builder
-      {jsonSchema.fields.map((f, i) => (
+      {formSchema.fields.map((f, i) => (
         <FieldRender f={f} key={i} errors={errors} register={register}/>
       ))}
       <button className='p-2 bg-slate-700 text-white' type='submit'>Submit</button>

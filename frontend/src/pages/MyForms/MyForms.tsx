@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { useDeleteFormMutation, useGetFormsQuery } from "../../store/api/apiSlice"
+import { useAddFormMutation, useDeleteFormMutation, useGetFormsQuery } from "../../store/api/apiSlice"
+import { defaultNewFields, defaultNewForm, typeConfig } from "../../types";
 
 
 export default function MyForms() {
   const { data, isLoading, error } = useGetFormsQuery()
   const [deleteForm, resDeleteForm] = useDeleteFormMutation();
+  const [addForm, resAddForm] = useAddFormMutation();
+
 
   const navigate = useNavigate();
   
@@ -13,12 +16,12 @@ export default function MyForms() {
   //   skip: !user
   // });
 
-  if(error){
-    return <>Error</>
-  }
-
   if(isLoading){
     return <>Loading...</>
+  }
+
+  if(error){
+    return <>Error</>
   }
 
   // id, name, description, fields, createdAt, updatedAt
@@ -26,7 +29,12 @@ export default function MyForms() {
   return (
     <div className="p-2 grid max-w-[800px] mx-auto">
       <h1 className="font-bold text-[2rem] text-center">My Forms</h1>
-      <button className="my-2 justify-self-start rounded-md hover:bg-blue-700 bg-blue-600 text-white p-2">+ New Form</button>
+      <button
+        className="my-2 justify-self-start rounded-md hover:bg-blue-700 bg-blue-600 text-white p-2"
+        onClick={() => addForm({body: defaultNewForm})}
+      >
+        + New Form
+      </button>
       {data.forms?.length === 0 ? 
       <>Your Forms list is empty, please add a new Form.</>
       : data.forms.map(f => (
@@ -38,8 +46,8 @@ export default function MyForms() {
           <p>id: {f.id}</p>
           <p>name: {f.name}</p>
           <p>description: {f.description || '-'}</p>
-          <p>updatedAt: {f.updatedAt}</p>
-          <p>createdAt: {f.createdAt}</p>
+          <p>Last Updated: {f.updatedAt}</p>
+          <p>Created At: {f.createdAt}</p>
         </div>
         <button
           className="my-1 bg-red-500 hover:bg-red-700 px-2 py-1 rounded-md text-white"

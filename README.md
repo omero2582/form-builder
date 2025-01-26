@@ -10,7 +10,7 @@ cd ./backend && npm i
 ## .env
 Please add inside ./backend, a file '.env' with a string
 ```bash
-DB_URL='your_mongo_url'
+DB_URL='your_mongoDB_url'
 ```
 I have emailed an example working url/file to akaur@galtoo.com, from my email sebastiancev1@gmail.com
 ## Run App

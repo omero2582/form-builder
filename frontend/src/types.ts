@@ -2,9 +2,9 @@ import { z } from "zod";
 import { nanoid } from 'nanoid';
 
 export const typeConfig = {
-  string: { zodType: () => z.string(), new: () => ({ type: "string", id: `string-${nanoid(8)}`, placeholder: 'my text', label: 'Text:' }) },
+  string: { zodType: () => z.string(), new: () => ({ type: "string", id: `string-${nanoid(8)}`, placeholder: 'Name', label: 'Text:' }) },
   email: { zodType: () => z.string().email(), new: () => ({ type: "email", id: `email-${nanoid(8)}`, placeholder: 'abc@example.com', label: 'Email:' }) },
-  number: { zodType: () => z.coerce.number(), new: () => ({ type: "number", id: `number-${nanoid(8)}`, placeholder: '10', label: 'Number:' })  },
+  number: { zodType: () => z.coerce.number(), new: () => ({ type: "number", id: `number-${nanoid(8)}`, placeholder: 'age', label: 'Number:' })  },
   password: { zodType: () => z.string(), new: () => ({ type: "password", id: `password-${nanoid(8)}`, placeholder: 'password', label: 'Password:' })  },
   
   date: { zodType: () => z.coerce.date(), new: () => ({ type: "date", id: `date-${nanoid(8)}` }) , label: 'Date:'},
@@ -15,6 +15,26 @@ export const typeConfig = {
   
   checkbox: { zodType: () => z.boolean(), new: () => ({ type: "checkbox", id: `checkbox-${nanoid(8)}` , label: 'Checkbox'}) },
 };
+
+export const defaultNewFieldsOldVersion = [
+  { type: "string", id: "firstName", placeholder: 'First Name',  required: true },
+  { type: "number", id: "id", placeholder: 'id', required: true, min: 18 },
+  { type: "email", id: "email", placeholder:'email', required: true },
+  { type: "password", id: "password", placeholder:'password' }
+]
+
+export const defaultNewFields = [
+  {...typeConfig.string.new(), required: true},
+  {...typeConfig.number.new(), required: true, min: 18},
+  {...typeConfig.email.new(), required: true},
+  typeConfig.password.new(),
+]
+
+export const defaultNewForm = {
+  name: 'New Form',
+  description: 'Brand New Form!',
+  fields: defaultNewFields,
+}
 
 export type FieldSchema = {
   // name: string,

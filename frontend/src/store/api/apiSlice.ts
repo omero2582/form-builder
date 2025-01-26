@@ -18,7 +18,7 @@ export const formApi = createApi({
     }),
 
     getFormById: builder.query({
-      query: (id) => `/forms/${id}`,
+      query: ({id}) => `/forms/${id}`,
       providesTags: (result, error, {id}) => [{ type: 'Forms', id }],
     }),
 

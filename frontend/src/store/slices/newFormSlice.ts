@@ -1,30 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { FormSchema, typeConfig } from '../../types';
+import { FormSchema, defaultNewFieldsOldVersion, defaultNewFields, typeConfig } from '../../types';
 
 
 const initialState: FormSchema = {
     name: 'Form',
-    fields: [
-      { type: "string", id: "firstName", placeholder: 'First Name',  required: true },
-      { type: "number", id: "id", placeholder: 'id', required: true, min: 18 },
-      { type: "email", id: "email", placeholder:'email', required: true },
-      { type: "password", id: "password", placeholder:'password' }
-      // / DONE
-      // - text input 
-      //    .sting() = "string" | "number" | "email"  | "password" 
-      //      | "textarea" | "select" | "checkbox" | "radio" | "date" | "file"
-      
-      // TODO
-      // - textarea
-      // - select dropdown
-      // - checkbox
-      // - radio buttons
-      // - datepicker
+    fields: defaultNewFields,
+};
 
-      // TOOD OT DO change above to justbe composed of a bunch of field.new() called 5 times or so to 
-      // create the intiial state for 'Default New Form'
-    ],
-  };
+  // / DONE
+  // - text input 
+  //    .sting() = "string" | "number" | "email"  | "password" 
+  //      | "textarea" | "select" | "checkbox" | "radio" | "date" | "file"
+  // - datepicker
+  // - textarea
+  // - select dropdown
+  // - radio buttons
+  
+  // TODO
+  // ALLOW EDIT MIN MAX, AND LABEL
+  // - checkbox
 
 export const newForm = createSlice({
   name: 'newForm',
