@@ -8,6 +8,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { Modal, Button } from '@mantine/core';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import MyForms from './pages/MyForms/MyForms.tsx';
+import Navbar from './layout/Navbar.tsx';
 
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
     <MantineProvider>
       <BrowserRouter>
         <div className='bg-gray-200 min-h-[100vh]'>
-          {/* <Navbar/> */}
+        <Navbar/>
         <Routes>
           <Route path="/" element={<Navigate to="/my-forms"/> }/>
           <Route path="/my-forms" element={<MyForms/>} />
