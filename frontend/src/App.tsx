@@ -9,6 +9,7 @@ import { Modal, Button } from '@mantine/core';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import MyForms from './pages/MyForms/MyForms.tsx';
 import Navbar from './layout/Navbar.tsx';
+import { useState } from 'react';
 
 
 function App() {
@@ -36,16 +37,43 @@ function App() {
 export default App
 
 
-// function TestModal() {
-//   const [opened, { open, close }] = useDisclosure(false);
-//   return(
-//     <>
-//     <Modal opened={opened} onClose={close} title="Authentication">
-//       {/* Modal content */}
-//       </Modal>
-//       <Button variant="default" onClick={open}>
-//         Open modal
-//       </Button>
-//     </>
-//   )
-// }
+function EditFormNameDescriptionModal({form}) {
+  const {name, description} = form; 
+  const [opened, { open, close }] = useDisclosure(false);
+  const [nameState, setNameState] = useState(name)
+  const [descriptionState, setDescriptionState] = useState(description)
+
+  const handleSubmit = () => {
+    // dispatch(editForm({id: form.id, body: {...form, name: nameState, description: descriptionState}}))
+    close();
+  }
+  return(
+    <>
+      <Modal opened={opened} onClose={close} title="Edit Name/Description">
+      {/* Modal content */}
+      <div>
+        <label>
+          Name:
+          <input
+            value={nameState}
+            onChange={(e) => setNameState(e.target.value)}
+          />
+        </label>
+        <label>
+          Description:
+          <input
+            value={descriptionState}
+            onChange={(e) => setDescriptionState(e.target.value)}
+          />
+        </label>
+      </div>
+      <button onClick={handleSubmit}>
+        Submit
+      </button>
+      </Modal>
+      <Button variant="default" onClick={open}>
+        Open modal
+      </Button>
+    </>
+  )
+}

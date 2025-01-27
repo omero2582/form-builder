@@ -140,11 +140,9 @@ const formToSubmit = useAppSelector((state) => state.formToSubmit);
   return (
     
       <form ref={setNodeRef} noValidate onSubmit={handleSubmit(onSubmit)} className='grid'>
-        <div className='mb-4'>
-          <h1 className='text-[2rem] font-medium tracking-wide text-center'>
+          <h1 className='my-2 text-[2rem] font-medium tracking-wide text-center'>
             Form Builder
           </h1>
-        </div>
         <div className='grid gap-y-1'>
           {formSchema.fields.map((f, i) => (
               <FieldRender f={f} key={i} errors={errors} register={register}/>
