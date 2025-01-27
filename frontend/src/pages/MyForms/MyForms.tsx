@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAddFormMutation, useDeleteFormMutation, useGetFormsQuery } from "../../store/api/apiSlice"
 import { defaultNewFields, defaultNewForm, typeConfig } from "../../types";
+import { getDateSimple } from "../../utils/utils";
 
 
 export default function MyForms() {
@@ -46,8 +47,8 @@ export default function MyForms() {
           <p>id: {f.id}</p>
           <p>name: {f.name}</p>
           <p>description: {f.description || '-'}</p>
-          <p>Last Updated: {f.updatedAt}</p>
-          <p>Created At: {f.createdAt}</p>
+          <p>Last Updated: {getDateSimple(f.updatedAt)}</p>
+          <p>Created At: {getDateSimple(f.createdAt)}</p>
         </div>
         <button
           className="my-1 bg-red-500 hover:bg-red-700 px-2 py-1 rounded-md text-white"

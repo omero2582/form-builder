@@ -1,13 +1,13 @@
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import newFormReducer from "./slices/newFormSlice"
+import newFormReducer from "./slices/formToSubmitSlice.ts"
 import generalReducer from './slices/general'
 
 import {  formApi } from './api/apiSlice.ts'
 
 export const store = configureStore({
   reducer: {
-    newForm: newFormReducer,
+    formToSubmit: newFormReducer,
     general: generalReducer,
 
     //apis

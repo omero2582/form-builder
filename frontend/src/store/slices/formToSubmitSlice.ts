@@ -2,10 +2,11 @@ import { createSlice } from '@reduxjs/toolkit'
 import { FormSchema, defaultNewFieldsOldVersion, defaultNewFields, typeConfig } from '../../types';
 
 
-const initialState: FormSchema = {
-    name: 'Form',
-    fields: defaultNewFields,
-};
+// const initialState: FormSchema = {
+//     name: 'Form',
+//     fields: defaultNewFields,
+// };
+const initialState = null;
 
   // / DONE
   // - text input 
@@ -20,8 +21,8 @@ const initialState: FormSchema = {
   // ALLOW EDIT MIN MAX, AND LABEL
   // - checkbox
 
-export const newForm = createSlice({
-  name: 'newForm',
+export const formToSubmit = createSlice({
+  name: 'formToSubmit',
   initialState,
   reducers: {
     addText: (state) => {
@@ -51,13 +52,22 @@ export const newForm = createSlice({
     updateFieldById: (state, {payload}) => {
       const {id, updatedField} = payload;
       const fieldFound = state.fields.find(f => f.id === id);
+      console.log('UDPATE FIELD PAYLOAD', payload, 'FIELD FOUND', fieldFound)
       Object.assign(fieldFound, updatedField);
+    },
+    deleteFieldById: (state, {payload}) => {
+      const {id} = payload;
+      state.fields = state.fields.filter(f => f.id !== id);
+    },
+
+    updateForm: (state, {payload}) => {
+      return payload
     }
 
   },
 })
 
 // Action creators are generated for each case reducer function
-export const {addText, addTextArea, updateFieldById, addDate,addDropbown, addNumber, addRadioButtons} = newForm.actions
+export const { deleteFieldById,updateForm,addText, addTextArea, updateFieldById, addDate,addDropbown, addNumber, addRadioButtons} = formToSubmit.actions
 
-export default newForm.reducer
+export default formToSubmit.reducer

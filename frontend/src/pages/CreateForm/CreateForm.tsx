@@ -5,8 +5,12 @@ import { parseJsonToZodSchema} from '../../types';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import {selectEditField, setSidePanel, toggleSidePanel } from '../../store/slices/general';
 import SidePanel from './SidePanel';
-import { useGetFormByIdQuery } from '../../store/api/apiSlice';
+import { useEditFormMutation, useGetFormByIdQuery } from '../../store/api/apiSlice';
 import { useParams } from 'react-router-dom';
+import { getDateSimple, getDateSocials } from '../../utils/utils';
+import { useEffect } from 'react';
+import { updateForm } from '../../store/slices/formToSubmitSlice';
+import { useDispatch } from 'react-redux';
 
 export default function CreateForm() {
   const dispatch = useAppDispatch();
@@ -16,7 +20,18 @@ export default function CreateForm() {
   console.log(id)
   const {data, isLoading, error} = useGetFormByIdQuery({id});
 
-  const jsonSchema = useAppSelector((state) => state.newForm);
+  const formToSubmit = useAppSelector((state) => state.formToSubmit);
+  
+  // console.log('formTOSubmit', formToSubmit)
+
+  useEffect(() => {
+    if(data){
+      // console.log('Udpate', data)
+      dispatch(updateForm(data?.form))
+    }
+  }, [data])
+
+
   if(isLoading){
     return <p>Loading...</p>
   }
@@ -25,12 +40,21 @@ export default function CreateForm() {
     return <p>Error</p>
   }
 
+  if(!formToSubmit){
+    return null
+  }
+
+
 
   return (
     <div className='flex min-h-[100vh]'>
       <div className='flex-1 grid justify-center content-center'>
-        <MyForm formSchema={data.form}/>
-        <button onClick={() => dispatch(toggleSidePanel())}>
+        {/* <MyForm formSchema={data.form}/> */}
+        <MyForm formSchema={formToSubmit}/>
+        <button 
+          onClick={() => dispatch(toggleSidePanel())}
+          className='p-2 bg-slate-700 hover:bg-slate-800 text-gray-50'
+        >
           {showSidePanel ? 'Hide Side Panel' : 'Show Side Panel'}
         </button>
       </div>
@@ -60,9 +84,10 @@ export function MyForm({formSchema}) {
       return out;
     }, zodSchema)),
     defaultValues: {
-      // categories:  [],
-      // TODO starter vals here ??
-    }, mode: 'onChange' // TODO, this is new
+      // starter vals here ??
+    }, 
+    // mode: 'onChange'
+    mode: 'onSubmit'
   });
 
   const {
@@ -71,20 +96,47 @@ export function MyForm({formSchema}) {
     formState: {errors, isSubmitting, isDirty},
 } = formHookReturn;
   
+const dispatch = useAppDispatch();
+const [editForm, resEditForm] = useEditFormMutation()
+const formToSubmit = useAppSelector((state) => state.formToSubmit);
+
   const onSubmit = async (body: TMyFormSchema) => {
-    console.log('SUBMIT', body);
+    // console.log('SUBMIT', body);
+    // body contains the name/value pairs from the actual form. It does not contain
+    // the form we have been building
+  }
+  
+  // This is what we actually want though. formToSubmit is the form we have been
+  // building using redux state. We send this to our backend to save our custom form
+  const onSaveChanges = async () => {
+    // console.log('SUBMIT', formToSubmit)
+    dispatch(editForm({id: formSchema.id, body: formToSubmit}))
     reset();
   }
 
 
-
   return (
-    <form noValidate onSubmit={handleSubmit(onSubmit)}>
-      Form Builder
+    <form noValidate onSubmit={handleSubmit(onSubmit)} className='grid'>
+      <h1 className='text-[2rem] font-medium tracking-wide'>Form Builder</h1>
       {formSchema.fields.map((f, i) => (
         <FieldRender f={f} key={i} errors={errors} register={register}/>
       ))}
-      <button className='p-2 bg-slate-700 text-white' type='submit'>Submit</button>
+      <p className='mt-1 mb-[10px]'>Last Updated: {getDateSocials(formSchema.updatedAt)}</p>
+      <div className='grid grid-flow-col gap-x-3'>
+        <button
+          className='p-2 bg-blue-600 hover:bg-blue-700 text-white'
+          type='button'
+          onClick={() => onSaveChanges()}
+        >
+          Save Changes
+        </button>
+        <button
+          className='p-2 bg-blue-600 hover:bg-blue-700 text-white'
+          type='submit'
+        >
+          Test Validation
+        </button>
+      </div>
     </form>
   )
 }
