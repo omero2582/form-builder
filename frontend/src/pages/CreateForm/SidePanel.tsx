@@ -95,6 +95,41 @@ export default function SidePanel() {
               
           </label>
         </div>}
+        {typeConfig[fieldEditingChangesToApply?.type]?.supports?.includes('minmax')
+        && <div>
+            <label>
+              Min:
+              <input 
+                value={fieldEditingChangesToApply?.min}
+                onChange={(e) => {
+                  if(e.target.value.length > 0){
+                    setFieldEditingChangesToApply(f => ({...f, min: Number(e.target.value) || undefined}))
+                  }else{
+                    setFieldEditingChangesToApply(f => ({...f, min: undefined}))
+                  }
+                }}
+                className='bg-white border-gray-500 border rounded-md p-[4px]'
+              />
+                
+            </label>
+            <label>
+              Max:
+              <input 
+                value={fieldEditingChangesToApply?.max}
+                onChange={(e) => {
+                  if(e.target.value.length > 0){
+                    setFieldEditingChangesToApply(f => ({...f, max: Number(e.target.value) || undefined}))
+                  }else{
+                    setFieldEditingChangesToApply(f => ({...f, max: undefined}))
+                  }
+                }}
+                className='bg-white border-gray-500 border rounded-md p-[4px]'
+              />
+                
+            </label>
+
+        </div>
+        }
         {(fieldEditingChangesToApply?.type === 'select' || fieldEditingChangesToApply?.type === 'radio') && 
         fieldEditingChangesToApply?.options &&
         <div>

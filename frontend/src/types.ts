@@ -2,19 +2,20 @@ import { z } from "zod";
 import { nanoid } from 'nanoid';
 
 export const typeConfig = {
-  string: { zodType: () => z.string(), new: () => ({ type: "string", id: `string-${nanoid(8)}`, placeholder: 'Name', label: 'Text:' }) },
-  email: { zodType: () => z.string().email(), new: () => ({ type: "email", id: `email-${nanoid(8)}`, placeholder: 'abc@example.com', label: 'Email:' }) },
-  number: { zodType: () => z.coerce.number(), new: () => ({ type: "number", id: `number-${nanoid(8)}`, placeholder: 'age', label: 'Number:' })  },
-  password: { zodType: () => z.string(), new: () => ({ type: "password", id: `password-${nanoid(8)}`, placeholder: 'password', label: 'Password:' })  },
+  string: { supports: ['minmax'], zodType: () => z.string(), new: () => ({ type: "string", id: `string-${nanoid(8)}`, placeholder: 'Name', label: 'Text:' }) },
+  email: { supports: ['minmax'], zodType: () => z.string().email(), new: () => ({ type: "email", id: `email-${nanoid(8)}`, placeholder: 'abc@example.com', label: 'Email:' }) },
+  number: { supports: ['minmax'], zodType: () => z.coerce.number(), new: () => ({ type: "number", id: `number-${nanoid(8)}`, placeholder: 'age', label: 'Number:' })  },
+  password: { supports: ['minmax'], zodType: () => z.string(), new: () => ({ type: "password", id: `password-${nanoid(8)}`, placeholder: 'password', label: 'Password:' })  },
   
   date: { zodType: () => z.coerce.date(), new: () => ({ type: "date", id: `date-${nanoid(8)}`, label: 'Date:'})},
   
-  textarea: { zodType: () => z.string(), new: () => ({ type: "textarea", id: `textarea-${nanoid(8)}`, placeholder: 'Description', label: 'Text Area:' })  },
+  textarea: { supports: ['minmax'], zodType: () => z.string(), new: () => ({ type: "textarea", id: `textarea-${nanoid(8)}`, placeholder: 'Description', label: 'Text Area:' })  },
   select: { zodType: (field) => z.enum(field.options.map(o => o.label)), new: () => ({ type: "select", label: 'Dropdown:', options: [{label: 'option', id: `select-option-${nanoid(8)}`}], id: `select-${nanoid(8)}`,}) , newOption: () => ({label: 'option', id: `select-option-${nanoid(8)}`})},
   radio: { zodType: (field) => z.enum(field.options.map(o => o.label)), new: () => ({ type: "radio",  label: 'Radio:', options: [{label: 'option', id: `radio-option-${nanoid(8)}`}], id: `radio-${nanoid(8)}` }), newOption: () => ({label: 'option', id: `radio-option-${nanoid(8)}`})},
   
   checkbox: { zodType: () => z.boolean(), new: () => ({ type: "checkbox", id: `checkbox-${nanoid(8)}` , label: 'Checkbox'}) },
 };
+
 
 export const defaultNewFieldsOldVersion = [
   { type: "string", id: "firstName", placeholder: 'First Name',  required: true },
