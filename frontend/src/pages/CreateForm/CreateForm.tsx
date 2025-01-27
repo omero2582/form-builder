@@ -11,6 +11,7 @@ import { getDateSimple, getDateSocials } from '../../utils/utils';
 import { useEffect } from 'react';
 import { updateForm } from '../../store/slices/formToSubmitSlice';
 import { useDispatch } from 'react-redux';
+import {DndContext, DragEndEvent, useDroppable} from '@dnd-kit/core';
 
 export default function CreateForm() {
   const dispatch = useAppDispatch();
@@ -44,24 +45,40 @@ export default function CreateForm() {
     return null
   }
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const {active, over} = event
+    // active is the data we are dragging. Over is the data we are dragging over
 
+    if (!over) return;
+
+    // console.log('DROP', active, over)
+
+    active.data?.current?.onClick()
+
+    // TODO maybe instead pass into active an acive.dropFunction(), and have the
+    // compeoinet apsss in a function
+
+    // Why? Because otherwise how do I kow which distpacth(addInput()) to call ??
+    // I can maybe create a new dispatch(addAnyInput(myInputType))
+    // and maybe this redux action usese the parameter you pass in to determine
+    // which redux reducer to run, but dont know...
+    // if I can just pass a function from the active (in sidebar component),
+    // then I think that is easier
+
+  }
 
   return (
     <div className='flex min-h-[100vh]'>
+      <DndContext onDragEnd={handleDragEnd}>
       <div className='flex-1 grid justify-center content-center'>
         {/* <MyForm formSchema={data.form}/> */}
         <MyForm formSchema={formToSubmit}/>
-        <button 
-          onClick={() => dispatch(toggleSidePanel())}
-          className='p-2 bg-slate-700 hover:bg-slate-800 text-gray-50'
-        >
-          {showSidePanel ? 'Hide Side Panel' : 'Show Side Panel'}
-        </button>
       </div>
-      <div className={`flex-shrink-0 transition-[width]  ${showSidePanel ? 'w-[200px] px-3 border-r-[1.5px] border-neutral-300' : 'w-0'}`}>
+      <div className={`flex-shrink-0 transition-[width]  ${showSidePanel ? 'w-[200px] pr-3 border-r-[1.5px] border-neutral-300' : 'w-0'}`}>
         {showSidePanel && 
         <SidePanel/>}
       </div>
+      </DndContext>
     </div>
   )
 }
@@ -92,7 +109,7 @@ export function MyForm({formSchema}) {
 
   const {
     watch, reset, register, getValues, handleSubmit, setFocus,
-    setError, control,setValue, trigger,
+    setError, control,setValue, trigger, clearErrors,
     formState: {errors, isSubmitting, isDirty},
 } = formHookReturn;
   
@@ -114,30 +131,63 @@ const formToSubmit = useAppSelector((state) => state.formToSubmit);
     reset();
   }
 
+ 
+
+  const {setNodeRef} = useDroppable({id: 'droppable'})
+  // what you pass in here, will be the 'over' in handleDragEnd
+  const showSidePanel = useAppSelector((state) => state.general.showSidePanel);
 
   return (
-    <form noValidate onSubmit={handleSubmit(onSubmit)} className='grid'>
-      <h1 className='text-[2rem] font-medium tracking-wide'>Form Builder</h1>
-      {formSchema.fields.map((f, i) => (
-        <FieldRender f={f} key={i} errors={errors} register={register}/>
-      ))}
-      <p className='mt-1 mb-[10px]'>Last Updated: {getDateSocials(formSchema.updatedAt)}</p>
-      <div className='grid grid-flow-col gap-x-3'>
-        <button
-          className='p-2 bg-blue-600 hover:bg-blue-700 text-white'
+    
+      <form ref={setNodeRef} noValidate onSubmit={handleSubmit(onSubmit)} className='grid'>
+        <div className='mb-4'>
+          <h1 className='text-[2rem] font-medium tracking-wide text-center'>
+            Form Builder
+          </h1>
+        </div>
+        <div className='grid gap-y-1'>
+          {formSchema.fields.map((f, i) => (
+              <FieldRender f={f} key={i} errors={errors} register={register}/>
+            ))}
+        </div>
+        <p className='mt-1 mb-[10px]'>Last Updated: {getDateSocials(formSchema.updatedAt)}</p>
+        <button 
+          onClick={() => dispatch(toggleSidePanel())}
+          className='p-2 bg-slate-700 hover:bg-slate-800 text-gray-50'
           type='button'
-          onClick={() => onSaveChanges()}
         >
-          Save Changes
+          {showSidePanel ? 'Hide Side Panel' : 'Edit'}
         </button>
-        <button
-          className='p-2 bg-blue-600 hover:bg-blue-700 text-white'
-          type='submit'
+        <div className='grid grid-flow-col gap-x-3'>
+          <button
+            className='p-2 text-white bg-blue-600 hover:bg-blue-700 '
+            type='button'
+            onClick={() => onSaveChanges()}
+          >
+            Save Changes
+          </button>
+        </div>
+        <p className='text-center text-[1.05rem] mt-1 mb-3'>
+          {`Click 'Apply' before 'Save Changes' =>`}
+        </p>
+        
+        <div className=' space-x-[10px] grid grid-flow-col'>
+          <button
+            className='p-2 bg-blue-600 hover:bg-blue-700 text-white'
+            type='submit'
+          >
+            Test Validation
+          </button>
+        <button 
+          onClick={() => clearErrors()}
+          className='p-2 bg-slate-700 hover:bg-slate-800 text-gray-50'
+          type='button'
         >
-          Test Validation
+          Clear Errors
         </button>
-      </div>
-    </form>
+        </div>
+        
+      </form>
   )
 }
 
@@ -178,9 +228,9 @@ function FieldRender({f, errors, register}) {
   if(f.type ===  'select'){
     return (
       <div className="grid">
-        <div className="grid">
-          <label htmlFor={f.id} className="sr-only">
-            {f.id}:
+        <div className="grid gap-x-2 grid-flow-col items-center justify-start">
+          <label htmlFor={f.id} className=" overflow-ellipsis overflow-hidden">
+            {f.label}
           </label>
           <select name={f.id} id={f.id} onFocus={() => onEditField(f)}
             {...register(f.id)}
@@ -200,16 +250,16 @@ function FieldRender({f, errors, register}) {
     return (
       <div className="grid">
       <div className="grid">
-        <label htmlFor={f.id} className="sr-only">
-          {f.id}:
+        <label htmlFor={f.id} className="overflow-ellipsis overflow-hidden">
+          {f.label}
         </label>
         {f.options.map(o => (
-          <label key={o.id}>
-            {o.label}
+          <label key={o.id} className=''>
             <input type='radio' name={f.id} id={o.id} value={o.label} onFocus={() => onEditField(f)}
             {...register(f.id)}
             // className={`peer border-gray-400 border rounded-md p-[8px] leading-[16px] `}
             />
+            {o.label}
           </label>
         ))}
       </div>
@@ -220,20 +270,20 @@ function FieldRender({f, errors, register}) {
 
   return (
     <div className="grid">
-      <div className="grid">
-        <label htmlFor={f.id} className="sr-only">
-          {f.id}:
+      <div className="grid grid-flow-col items-center gap-x-2">
+        <label htmlFor={f.id} className="text-end w-[100px] overflow-ellipsis overflow-hidden">
+          {f.label}
         </label>
         <input
           type={f.type} 
           placeholder={f.placeholder || f.id}
           id={f.id}
-          className={`border-gray-400 border rounded-md p-[8px] leading-[16px] `}
+          className={`w-[205px] border-gray-400 border rounded-md p-[8px] leading-[16px] `}
           {...register(f.id)}
           onFocus={() => onEditField(f)}
         />
       </div>
-      {errors && errors[f.id] && <p className="text-red-600">{`${errors[f.id].message}`}</p>}
+      {errors && errors[f.id] && <p className="text-red-600 text-end">{`${errors[f.id].message}`}</p>}
     </div>
   )
 }

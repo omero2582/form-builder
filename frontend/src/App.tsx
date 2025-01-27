@@ -16,7 +16,7 @@ function App() {
   return (
     <MantineProvider>
       <BrowserRouter>
-        <div className='bg-gray-200 min-h-[100vh]'>
+        <div className='bg-gray-100 min-h-[100vh]'>
         <Navbar/>
         <Routes>
           <Route path="/" element={<Navigate to="/my-forms"/> }/>
