@@ -57,34 +57,9 @@ export type FormSchema = {
 };
 
 export const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
-  const shape = {};
+  const zodShape = {};
 
   jsonSchema.fields.forEach((field) => {
-    // let zodField;
-
-    // switch (field.type) {
-    //   case "string":
-    //   case "textarea":
-    //   case "password":
-    //     zodField = z.string();
-    //     break;
-    //   case "email":
-    //     zodField = z.string().email();
-    //     break;
-    //   case "number":
-    //     zodField = z.coerce.number();
-    //     if (field.min !== undefined) zodField = zodField.min(field.min);
-    //     if (field.max !== undefined) zodField = zodField.max(field.max);
-    //     break;
-    //   default:
-    //     throw new Error(`Custom from field type: ${field.type}, not supported`);
-    // }
-
-    // if (!field.required){
-    //   zodField = zodField.optional();
-    // }
-
-    // shape[field.name] = zodField;
 
     const config = typeConfig[field.type];
 
@@ -92,7 +67,7 @@ export const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
       throw new Error(`Custom from field type: ${field.type}, not supported`);
     }
 
-    let zodField = config.zodType(field);
+    let zodFieldValidation = config.zodType(field);
 
     // if (config.supports.includes("min") && field.min !== undefined) {
     //   zodField = zodField().min(field.min);
@@ -102,23 +77,23 @@ export const parseJsonToZodSchema = (jsonSchema: FormSchema) => {
     //   zodField = zodField().max(field.max);
     // }
       // Dynamically check for the existence of the `min` method
-    if (typeof zodField.min === "function" && field.min !== undefined) {
-      zodField = zodField.min(field.min);
+    if (typeof zodFieldValidation.min === "function" && field.min !== undefined) {
+      zodFieldValidation = zodFieldValidation.min(field.min);
     }
 
     // Dynamically check for the existence of the `max` method
-    if (typeof zodField.max === "function" && field.max !== undefined) {
-      zodField = zodField.max(field.max);
+    if (typeof zodFieldValidation.max === "function" && field.max !== undefined) {
+      zodFieldValidation = zodFieldValidation.max(field.max);
     }
 
     if (field.required) {
-      shape[field.id] = zodField;
+      zodShape[field.id] = zodFieldValidation;
     } else {
-      shape[field.id] = zodField.optional();
+      zodShape[field.id] = zodFieldValidation.optional();
     }
   });
 
-  return z.object(shape);
+  return z.object(zodShape);
 };
 
 // export type TMyFormSchema = z.infer<typeof myFormSchema>;

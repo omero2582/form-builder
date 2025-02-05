@@ -100,12 +100,13 @@ export default function SidePanel() {
             <label>
               Min:
               <input 
-                value={fieldEditingChangesToApply?.min}
+                type='number'
+                value={fieldEditingChangesToApply?.min || ''}
                 onChange={(e) => {
                   if(e.target.value.length > 0){
-                    setFieldEditingChangesToApply(f => ({...f, min: Number(e.target.value) || undefined}))
+                    setFieldEditingChangesToApply(f => ({...f, required: true, min: Number(e.target.value) || undefined}))
                   }else{
-                    setFieldEditingChangesToApply(f => ({...f, min: undefined}))
+                    setFieldEditingChangesToApply(f => ({...f, required: !!f.max, min: undefined}))
                   }
                 }}
                 className='bg-white border-gray-500 border rounded-md p-[4px]'
@@ -115,12 +116,13 @@ export default function SidePanel() {
             <label>
               Max:
               <input 
-                value={fieldEditingChangesToApply?.max}
+                type='number'
+                value={fieldEditingChangesToApply?.max || ''}
                 onChange={(e) => {
                   if(e.target.value.length > 0){
-                    setFieldEditingChangesToApply(f => ({...f, max: Number(e.target.value) || undefined}))
+                    setFieldEditingChangesToApply(f => ({...f, required: true, max: Number(e.target.value) || undefined}))
                   }else{
-                    setFieldEditingChangesToApply(f => ({...f, max: undefined}))
+                    setFieldEditingChangesToApply(f => ({...f, required: !!f.min, max: undefined}))
                   }
                 }}
                 className='bg-white border-gray-500 border rounded-md p-[4px]'
